@@ -70,14 +70,17 @@ class HomeController extends Controller
     private function createNoteContent($id_note){
         $note = Note::where('id','=',$id_note)->get();
         $filename = $note[0]->note_title.'.html';
+        $textfilename = $note[0]->note_title.'.txt';
         $dir = $note[0]->note_title;
         //create directory
         Storage::makeDirectory($dir); //create directory
         //create html content 
         Storage::disk('public')->put($dir.'/'.$filename, $note[0]->content); //create html content
+        //create text content
+        Storage::disk('public')->put($dir.'/'.$textfilename, strip_tags($note[0]->content)); //create txt content
         //create txt content [id note, id user]
         $conf = $note[0]->id.":".$note[0]->note_title.":".$note[0]->owner;
-        Storage::disk('public')->put($dir.'/'.$dir, $conf);
+        Storage::disk('public')->put($dir.'/conf', $conf);
         
         //get files under note dir
         $files = glob('storage/app/public/'.$dir.'/*');
