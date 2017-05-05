@@ -7,6 +7,7 @@ use App\Note;
 use App\User;
 use Storage;
 use Zipper;
+use Redirect;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -106,10 +107,21 @@ class HomeController extends Controller
     {
         $note = Note::where('id','=',$id_note)->get();
         $dir = $note[0]->note_title;
-        $exists = Storage::disk('public')->exists($dir.'.zip');
         
+        //echo $exists;
+        //if($exists!=1){
         $this->createNoteContent($id_note);
+
+        $exists = Storage::disk('public')->exists($dir.'.zip');
+        if($exists==1){
+            return response()->download('storage/app/public/'.$dir.'.zip');    
+        }else{
+            return Redirect::to('download/'.$id_note);
+        }
+        //}
+        //echo $dir;
+        //echo Storage::disk('public')->exists($dir.'.zip');
         
-        return response()->download('storage/app/public/'.$dir.'.zip');
+        
     }
 }
